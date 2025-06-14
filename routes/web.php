@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\InstituteController;
+use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
+use App\Http\Middleware\AdminMiddleware; // Importar o middleware
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,5 +27,19 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Rotas Administrativas
+Route::middleware(['auth', 'verified', AdminMiddleware::class]) // Aplicando o middleware aqui
+->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('institutes', InstituteController::class);
+        Route::resource('students', StudentController::class);
+
+        // Rotas para gerenciamento de fotos de um aluno específico
+        Route::post('students/{student}/photos', [PhotoController::class, 'store'])->name('photos.store');
+        Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+    });
+
 
 require __DIR__.'/auth.php';
