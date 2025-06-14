@@ -28,15 +28,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Rotas Administrativas
-Route::middleware(['auth', 'verified', AdminMiddleware::class]) // Aplicando o middleware aqui
+
+Route::middleware(['auth', 'verified', AdminMiddleware::class])
 ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::resource('institutes', InstituteController::class);
         Route::resource('students', StudentController::class);
 
-        // Rotas para gerenciamento de fotos de um aluno específico
+
         Route::post('students/{student}/photos', [PhotoController::class, 'store'])->name('photos.store');
         Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
     });
