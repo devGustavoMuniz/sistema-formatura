@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, School } from 'lucide-vue-next';
 </script>
@@ -18,7 +18,8 @@ import { Users, School } from 'lucide-vue-next';
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card>
+                    <Link :href="route('admin.students.index')">
+                        <Card>
                         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle class="text-sm font-medium">
                                 Total de Alunos
@@ -29,21 +30,30 @@ import { Users, School } from 'lucide-vue-next';
                             <div class="text-2xl font-bold">
                                 1,257
                             </div>
+                            <p class="text-xs text-muted-foreground">
+                                    Clique para gerenciar
+                                </p>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">
-                                Total de Instituições
-                            </CardTitle>
-                            <School class="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div class="text-2xl font-bold">
-                                42
-                            </div>
-                        </CardContent>
-                    </Card>
+                    </Link>
+                     <Link :href="route('admin.institutes.index')">
+                        <Card class="hover:bg-accent transition-colors">
+                            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle class="text-sm font-medium">
+                                    Total de Instituições
+                                </CardTitle>
+                                <School class="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div class="text-2xl font-bold">
+                                    42
+                                </div>
+                                <p class="text-xs text-muted-foreground">
+                                    Clique para gerenciar
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 </div>
 
                  <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

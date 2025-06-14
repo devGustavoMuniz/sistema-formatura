@@ -1,33 +1,36 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-vue-next';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MoreHorizontal, Search } from 'lucide-vue-next';
 
 // Dados mocados para visualização
-const institutions = [
-  { id: 1, name: 'Universidade Federal de Lavras', cnpj: '26.196.838/0001-20', address: 'Campus Universitário, Lavras - MG' },
-  { id: 2, name: 'Centro Universitário de Lavras', cnpj: '12.345.678/0001-99', address: 'Rua de Exemplo, 123, Lavras - MG' },
-  { id: 3, name: 'Instituto Presbiteriano Gammon', cnpj: '98.765.432/0001-11', address: 'Praça Dr. Augusto Silva, 772, Lavras - MG' },
-];
-
+const students = ref([
+    { id: 1, name: 'Gustavo Muniz', ra: '202010140', institution: 'Universidade Federal de Lavras' },
+    { id: 2, name: 'Maria Silva', ra: '202120315', institution: 'Centro Universitário de Lavras' },
+    { id: 3, name: 'João Pereira', ra: '201910042', institution: 'Universidade Federal de Lavras' },
+]);
 </script>
 
 <template>
-    <Head title="Gerenciar Instituições" />
+
+    <Head title="Gerenciar Alunos" />
 
     <AuthenticatedLayout>
         <template #header>
-             <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Gerenciamento de Instituições
+                    Gerenciamento de Alunos
                 </h2>
-                <Link :href="route('admin.institutes.create')">
-                    <Button>Nova Instituição</Button>
+                <Link :href="route('admin.students.create')">
+                <Button>Novo Aluno</Button>
                 </Link>
             </div>
         </template>
@@ -36,23 +39,46 @@ const institutions = [
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Lista de Instituições</CardTitle>
+                        <CardTitle>Lista de Alunos</CardTitle>
                     </CardHeader>
                     <CardContent>
+                        <!-- Filtros -->
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="relative w-full max-w-sm">
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input type="search" placeholder="Buscar por nome ou RA..." class="pl-9" />
+                            </div>
+                            <Select>
+                                <SelectTrigger class="w-[280px]">
+                                    <SelectValue placeholder="Filtrar por instituição" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Instituições</SelectLabel>
+                                        <SelectItem value="all">Todas as Instituições</SelectItem>
+                                        <SelectItem value="ufla">Universidade Federal de Lavras</SelectItem>
+                                        <SelectItem value="unilavras">Centro Universitário de Lavras</SelectItem>
+                                        <SelectItem value="gammon">Instituto Presbiteriano Gammon</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <!-- Tabela de Alunos -->
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Nome</TableHead>
-                                    <TableHead>CNPJ</TableHead>
-                                    <TableHead>Endereço</TableHead>
+                                    <TableHead>Nome do Aluno</TableHead>
+                                    <TableHead>RA</TableHead>
+                                    <TableHead>Instituição</TableHead>
                                     <TableHead class="text-right">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="inst in institutions" :key="inst.id">
-                                    <TableCell class="font-medium">{{ inst.name }}</TableCell>
-                                    <TableCell>{{ inst.cnpj }}</TableCell>
-                                    <TableCell>{{ inst.address }}</TableCell>
+                                <TableRow v-for="student in students" :key="student.id">
+                                    <TableCell class="font-medium">{{ student.name }}</TableCell>
+                                    <TableCell>{{ student.ra }}</TableCell>
+                                    <TableCell>{{ student.institution }}</TableCell>
                                     <TableCell class="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger as-child>
@@ -62,25 +88,22 @@ const institutions = [
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <Link :href="route('admin.institutes.edit', inst.id)">
-                                                    <DropdownMenuItem>Editar</DropdownMenuItem>
+                                                <Link :href="route('admin.students.show', student.id)">
+                                                <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
+                                                </Link>
+                                                <Link :href="route('admin.students.edit', student.id)">
+                                                <DropdownMenuItem>Editar</DropdownMenuItem>
                                                 </Link>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger as-child>
-                                                        <!-- 
-                                                            CORREÇÃO: Adicionado @select.prevent
-                                                            Isso impede que o clique no item feche o DropdownMenu,
-                                                            permitindo que o AlertDialog permaneça visível.
-                                                        -->
-                                                        <DropdownMenuItem @select.prevent>
-                                                            Excluir
-                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem @select.prevent>Excluir</DropdownMenuItem>
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                Essa ação não pode ser desfeita. Isso irá deletar permanentemente a instituição.
+                                                                Essa ação não pode ser desfeita. Isso irá deletar
+                                                                permanentemente o aluno e suas fotos.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
