@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Interfaces\iSubject;
+use App\Traits\Subjectable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Student extends Model
+class Student extends Model implements iSubject
 {
-    use HasFactory;
+    use HasFactory, Subjectable;
 
     /**
      * The attributes that are mass assignable.
@@ -45,5 +48,26 @@ class Student extends Model
     public function photos(): HasMany
     {
         return $this->hasMany(Photo::class);
+    }
+
+    /**
+     * Scope a query to only include students of a given search.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $filters
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        $query->when($filters['search'] ?? null, function (Builder $query, string $search) {
+            $query->where(function (Builder $query) use ($search) {
+                $query->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('ra', 'like', '%'.$search.'%');
+            });
+        })->when($filters['institute_id'] ?? null, function (Builder $query, string $instituteId) {
+            $query->where('institute_id', $instituteId);
+        });
+
+        return $query;
     }
 }

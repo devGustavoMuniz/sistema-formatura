@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Interfaces\iSubject;
+use App\Traits\Subjectable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Photo extends Model
+class Photo extends Model implements iSubject
 {
-    use HasFactory;
+    use HasFactory, Subjectable;
 
     /**
      * The attributes that are mass assignable.
