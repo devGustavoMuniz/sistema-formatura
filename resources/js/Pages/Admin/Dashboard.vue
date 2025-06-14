@@ -29,9 +29,6 @@ import { Users, School } from 'lucide-vue-next';
                             <div class="text-2xl font-bold">
                                 1,257
                             </div>
-                            <p class="text-xs text-muted-foreground">
-                                +20.1% do último mês
-                            </p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -45,12 +42,8 @@ import { Users, School } from 'lucide-vue-next';
                             <div class="text-2xl font-bold">
                                 42
                             </div>
-                            <p class="text-xs text-muted-foreground">
-                                +5 desde o último ano
-                            </p>
                         </CardContent>
                     </Card>
-                     <!-- Outros cards de estatísticas podem ser adicionados aqui -->
                 </div>
 
                  <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
