@@ -16,10 +16,10 @@ class LogObserver implements iObserver
      */
     public function update(iSubject $subject): void
     {
-        // Obtém o nome da classe do objeto que foi modificado
+
         $className = class_basename($subject);
 
-        // Registra uma mensagem informativa no log padrão do Laravel
+
         Log::info("A entidade {$className} com ID #{$subject->id} foi atualizada ou criada.");
     }
 }
