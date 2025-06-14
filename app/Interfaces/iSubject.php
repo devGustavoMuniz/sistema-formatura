@@ -5,6 +5,8 @@ namespace App\Interfaces;
 /**
  * Interface para os objetos Observados (Subjects).
  * Define os métodos para gerenciar os Observers.
+ *
+ * @property-read int $id
  */
 interface iSubject
 {
