@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,5 +28,22 @@ class Institute extends Model
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
+    }
+
+    /**
+     * Scope a query to only include institutes of a given search.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $filters
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query->when($filters['search'] ?? null, function (Builder $query, string $search) {
+            $query->where(function (Builder $query) use ($search) {
+                $query->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('cnpj', 'like', '%'.$search.'%');
+            });
+        });
     }
 }
