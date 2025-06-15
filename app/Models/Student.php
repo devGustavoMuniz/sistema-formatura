@@ -61,12 +61,13 @@ class Student extends Model implements iSubject
     {
         $query->when($filters['search'] ?? null, function (Builder $query, string $search) {
             $query->where(function (Builder $query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('ra', 'like', '%'.$search.'%');
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('ra', 'like', '%' . $search . '%');
             });
-        })->when($filters['institute_id'] ?? null, function (Builder $query, string $instituteId) {
-            $query->where('institute_id', $instituteId);
-        });
+        })
+            ->when(!empty($filters['institute_id']) && $filters['institute_id'] !== 'all', function (Builder $query) use ($filters) {
+                $query->where('institute_id', $filters['institute_id']);
+            });
 
         return $query;
     }

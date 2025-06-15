@@ -8,31 +8,25 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputError from '@/Components/InputError.vue';
 
-// No cenário real, os dados viriam como props da página.
 const props = defineProps({
     student: {
         type: Object,
-        default: () => ({
-            id: 1,
-            name: 'Gustavo Muniz',
-            ra: '202010140',
-            email: 'gustavo@exemplo.com',
-            institute_id: '1' // ID correspondente à UFLA, por exemplo
-        })
+        required: true,
+    },
+    institutes: {
+        type: Array,
+        required: true,
     }
 });
-
 const form = useForm({
     name: props.student.name,
     ra: props.student.ra,
-    email: props.student.email,
-    institute_id: props.student.institute_id,
+    user_id: props.student.user_id,
+    institute_id: props.student.institute_id.toString(),
 });
 
 const submit = () => {
-    // Lógica de atualização viria aqui
-    // form.put(route('admin.students.update', props.student.id));
-    console.log(form.data());
+    form.put(route('admin.students.update', props.student.id));
 };
 </script>
 
@@ -42,7 +36,7 @@ const submit = () => {
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Editar Aluno
+                Editar Aluno: {{ student.name }}
             </h2>
         </template>
 
@@ -62,11 +56,6 @@ const submit = () => {
                                     <InputError :message="form.errors.name" />
                                 </div>
                                 <div class="grid gap-2">
-                                    <Label for="email">Email</Label>
-                                    <Input id="email" type="email" v-model="form.email" required />
-                                    <InputError :message="form.errors.email" />
-                                </div>
-                                <div class="grid gap-2">
                                     <Label for="ra">RA (Registro Acadêmico)</Label>
                                     <Input id="ra" type="text" v-model="form.ra" required />
                                     <InputError :message="form.errors.ra" />
@@ -79,9 +68,9 @@ const submit = () => {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem value="1">Universidade Federal de Lavras</SelectItem>
-                                                <SelectItem value="2">Centro Universitário de Lavras</SelectItem>
-                                                <SelectItem value="3">Instituto Presbiteriano Gammon</SelectItem>
+                                                <SelectItem v-for="institute in institutes" :key="institute.id" :value="institute.id.toString()">
+                                                    {{ institute.name }}
+                                                </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

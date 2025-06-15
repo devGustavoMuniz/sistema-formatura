@@ -9,6 +9,7 @@ use App\Models\Institute;
 use App\Observers\LogObserver;
 use App\Observers\NotificationObserver;
 use App\Strategies\InstituteValidationStrategy;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class InstituteService implements iInstituteService
@@ -20,10 +21,16 @@ class InstituteService implements iInstituteService
         $this->dao = $dao;
     }
 
-    public function getAllInstitutes(array $filters): Collection
+     public function getAllInstitutes(array $filters): LengthAwarePaginator
     {
         return $this->dao->getAll($filters);
     }
+
+        public function getAllInstitutesNoPagination(array $filters): Collection
+    {
+        return $this->dao->getAllNoPagination($filters);
+    }
+
 
     public function findInstituteById(int $id): ?Institute
     {

@@ -23,15 +23,20 @@ class PhotoController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request, Student $student)
+     public function store(Request $request, Student $student)
     {
-        $request->validate(['photo' => 'required|image']);
+        $request->validate([
+            'photos' => 'required|array',
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
 
         $data = ['student_id' => $student->id];
 
-        $this->service->uploadPhoto($data, $request->file('photo'));
+        foreach ($request->file('photos') as $file) {
+            $this->service->uploadPhoto($data, $file);
+        }
 
-        return back()->with('success', 'Foto enviada com sucesso!');
+        return back()->with('success', 'Fotos enviadas com sucesso!');
     }
 
     /**

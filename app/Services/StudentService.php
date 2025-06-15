@@ -9,6 +9,8 @@ use App\Models\Student;
 use App\Observers\LogObserver;
 use App\Strategies\StudentValidationStrategy;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 
 class StudentService implements iStudentService
 {
@@ -19,10 +21,16 @@ class StudentService implements iStudentService
         $this->dao = $dao;
     }
 
-    public function getAllStudents(array $filters): Collection
+    public function getAllStudents(array $filters): LengthAwarePaginator
     {
         return $this->dao->getAll($filters);
     }
+
+        public function getAllStudentsNoPagination(array $filters): Collection
+    {
+        return $this->dao->getAllNoPagination($filters);
+    }
+
 
     public function findStudentById(int $id): ?Student
     {
