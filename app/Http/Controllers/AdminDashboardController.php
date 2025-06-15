@@ -23,7 +23,7 @@ class AdminDashboardController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $totalInstitutes = $this->instituteService->getAllInstitutesNoPagination([])->count();
+        $totalInstitutes = $this->instituteService->getAllInstitutesCollection([])->count();
         $totalStudents = $this->studentService->getAllStudentsCollection([])->count();
 
         return Inertia::render('Admin/Dashboard', [
