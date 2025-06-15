@@ -9,12 +9,21 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StudentController;
 use App\Http\Middleware\AdminMiddleware;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
+// Rota da Página Inicial (estava faltando)
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+});
 
-require __DIR__.'/auth.php';
-
-
+// Rota principal do Dashboard, que redireciona o usuário
 Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
@@ -50,3 +59,4 @@ Route::middleware(['auth', 'verified', AdminMiddleware::class])
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     });
 
+require __DIR__.'/auth.php';
