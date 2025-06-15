@@ -4,11 +4,13 @@ namespace App\Providers;
 
 // Interfaces de Serviço
 use App\Interfaces\Services\iInstituteService;
+use App\Interfaces\Services\iReportService;
 use App\Interfaces\Services\iStudentService;
 use App\Interfaces\Services\iPhotoService;
 
 // Implementações (Serviços)
 use App\Services\InstituteService;
+use App\Services\ReportService;
 use App\Services\StudentService;
 use App\Services\PhotoService;
 
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(iInstituteService::class, InstituteService::class);
         $this->app->bind(iStudentService::class, StudentService::class);
         $this->app->bind(iPhotoService::class, PhotoService::class);
+        $this->app->bind(iReportService::class, ReportService::class);
 
         // Bind de DAOs
         $this->app->bind(iInstituteDAO::class, InstituteDAO::class);

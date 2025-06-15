@@ -8,29 +8,30 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputError from '@/Components/InputError.vue';
 
-// 1. Defina a prop 'institutes' para receber a lista do controller
-const props = defineProps({
+// A prop 'institutes' recebe a lista de instituições do controller
+defineProps({
     institutes: {
         type: Array,
         required: true,
     }
 });
 
-// 2. O formulário já contém os campos corretos
+// O `useForm` gere o estado do formulário e os erros de validação
 const form = useForm({
     name: '',
     ra: '',
     email: '',
     institute_id: null,
+    password: '',
+    password_confirmation: '',
 });
 
-// 3. A função submit agora envia os dados para a rota 'store'
+// A função submit envia todos os dados do objeto `form` para a rota 'store'
 const submit = () => {
-    form.post(route('admin.students.store'), {
-        onSuccess: () => {
-            // O formulário é limpo automaticamente em caso de sucesso
-        }
-    });
+    // **PASSO DE DEPURAÇÃO: Mostra os dados no console do navegador antes de enviar**
+    console.log('Dados a serem enviados:', form.data());
+
+    form.post(route('admin.students.store'));
 };
 </script>
 
@@ -71,7 +72,7 @@ const submit = () => {
                                 </div>
                                 <div class="grid gap-2">
                                     <Label for="institute">Instituição</Label>
-                                      <Select v-model="form.institute_id">
+                                    <Select v-model="form.institute_id">
                                         <SelectTrigger>
                                             <SelectValue placeholder="Selecione uma instituição" />
                                         </SelectTrigger>
@@ -85,8 +86,21 @@ const submit = () => {
                                     </Select>
                                     <InputError :message="form.errors.institute_id" />
                                 </div>
+
+                                <div class="grid gap-2">
+                                    <Label for="password">Senha</Label>
+                                    <Input id="password" type="password" v-model="form.password" required autocomplete="new-password" />
+                                    <InputError :message="form.errors.password" />
+                                </div>
+
+                                <div class="grid gap-2">
+                                    <Label for="password_confirmation">Confirmar Senha</Label>
+                                    <Input id="password_confirmation" type="password" v-model="form.password_confirmation" required autocomplete="new-password" />
+                                    <InputError :message="form.errors.password_confirmation" />
+                                </div>
+
                                 <div class="flex justify-end gap-2 mt-4">
-                                     <Link :href="route('admin.students.index')">
+                                    <Link :href="route('admin.students.index')">
                                         <Button variant="outline">Cancelar</Button>
                                     </Link>
                                     <Button type="submit" :disabled="form.processing">Salvar Aluno</Button>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\Services\iInstituteService;
 use App\Interfaces\Services\iStudentService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AdminDashboardController extends Controller
@@ -20,10 +21,10 @@ class AdminDashboardController extends Controller
     /**
      * Exibe o dashboard administrativo com estatísticas.
      */
-    public function index()
+    public function __invoke(Request $request)
     {
         $totalInstitutes = $this->instituteService->getAllInstitutesNoPagination([])->count();
-        $totalStudents = $this->studentService->getAllStudentsNoPagination([])->count();
+        $totalStudents = $this->studentService->getAllStudentsCollection([])->count();
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => [

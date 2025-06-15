@@ -15,7 +15,6 @@ class AlbumController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-
         $studentWithPhotos = $user->student()->with('photos')->first();
 
         return Inertia::render('Album/Index', [

@@ -13,7 +13,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Rota da Página Inicial (estava faltando)
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -23,13 +23,15 @@ Route::get('/', function () {
     ]);
 });
 
+// Inclui as rotas de autenticação (login, registro, etc.) do Breeze
+require __DIR__.'/auth.php';
+
 // Rota principal do Dashboard, que redireciona o usuário
 Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 
-// Rotas Comuns para Usuários Autenticados
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -37,26 +39,21 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// Rotas da Área do Aluno
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/meu-album', [AlbumController::class, 'index'])->name('album.index');
 });
-
 
 // Rotas da Área do Administrador
 Route::middleware(['auth', 'verified', AdminMiddleware::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+        Route::get('/reports', ReportController::class)->name('reports.index');
 
         Route::resource('institutes', InstituteController::class);
         Route::resource('students', StudentController::class);
 
         Route::post('students/{student}/photos', [PhotoController::class, 'store'])->name('students.photos.store');
         Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
-
-        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     });
-
-require __DIR__.'/auth.php';
