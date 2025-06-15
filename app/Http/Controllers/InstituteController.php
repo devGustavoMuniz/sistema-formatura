@@ -18,7 +18,8 @@ class InstituteController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only('search');
-        $institutes = $this->service->getAllInstitutes($filters);
+        // Chama o método que retorna os dados já paginados
+        $institutes = $this->service->getPaginatedInstitutes($filters);
 
         return Inertia::render('Admin/Institutes/Index', [
             'institutes' => $institutes,

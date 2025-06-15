@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\DashboardController;
@@ -9,18 +10,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StudentController;
 use App\Http\Middleware\AdminMiddleware;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-
+// Redireciona a rota raiz para o dashboard principal
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('dashboard');
 });
 
 // Inclui as rotas de autenticação (login, registro, etc.) do Breeze
@@ -32,6 +26,7 @@ Route::get('/dashboard', DashboardController::class)
     ->name('dashboard');
 
 
+// Rotas Comuns para Usuários Autenticados
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -39,6 +34,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
+// Rotas da Área do Aluno
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/meu-album', [AlbumController::class, 'index'])->name('album.index');
 });
@@ -53,6 +49,7 @@ Route::middleware(['auth', 'verified', AdminMiddleware::class])
 
         Route::resource('institutes', InstituteController::class);
         Route::resource('students', StudentController::class);
+        Route::resource('admins', AdminController::class)->except(['edit', 'update', 'show']);
 
         Route::post('students/{student}/photos', [PhotoController::class, 'store'])->name('students.photos.store');
         Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');

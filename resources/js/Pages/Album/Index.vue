@@ -3,20 +3,35 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
-// Dados mocados para o álbum do aluno
-const albumPhotos = ref([
-  { id: 1, url: 'https://placehold.co/600x400/e2e8f0/64748b?text=Formatura+1' },
-  { id: 2, url: 'https://placehold.co/600x400/cbd5e1/475569?text=Formatura+2' },
-  { id: 3, url: 'https://placehold.co/600x400/94a3b8/1e293b?text=Formatura+3' },
-  { id: 4, url: 'https://placehold.co/600x400/e2e8f0/64748b?text=Formatura+4' },
-  { id: 5, url: 'https://placehold.co/600x400/cbd5e1/475569?text=Formatura+5' },
-  { id: 6, url: 'https://placehold.co/600x400/94a3b8/1e293b?text=Formatura+6' },
-]);
+// As fotos são passadas como uma prop pelo AlbumController
+const props = defineProps({
+    photos: {
+        type: Array,
+        required: true,
+    },
+});
 
-// Ref para armazenar a URL da foto selecionada para o modal
+// Estado para controlar o modal
+const isModalOpen = ref(false);
 const selectedPhotoUrl = ref('');
+
+// Função para construir o URL completo da imagem a partir do caminho do storage
+const getPhotoUrl = (path) => {
+    return `/storage/${path}`;
+};
+
+// Função para abrir o modal com a foto selecionada
+const openModal = (photoPath) => {
+    selectedPhotoUrl.value = getPhotoUrl(photoPath);
+    isModalOpen.value = true;
+};
+
+// Função para fechar o modal
+const closeModal = () => {
+    isModalOpen.value = false;
+    selectedPhotoUrl.value = '';
+};
 </script>
 
 <template>
@@ -31,35 +46,43 @@ const selectedPhotoUrl = ref('');
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <p class="mb-6 text-lg text-gray-600 dark:text-gray-400">
-                    Bem-vindo(a) ao seu álbum! Clique em uma foto para visualizar em tamanho maior.
-                </p>
+                <!-- Mensagem caso o aluno não tenha fotos -->
+                <div v-if="photos.length === 0" class="text-center">
+                    <Card class="py-10">
+                        <CardContent>
+                            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Nenhuma foto encontrada.</h3>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                O seu álbum ainda está vazio. As fotos aparecerão aqui assim que forem adicionadas pelo administrador.
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
 
-                <Dialog>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        <!-- Cada card de foto funciona como um gatilho para o modal -->
-                        <DialogTrigger as-child v-for="photo in albumPhotos" :key="photo.id" @click="selectedPhotoUrl = photo.url">
-                             <Card class="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300">
-                                <CardContent class="p-0">
-                                    <img :src="photo.url" alt="Foto do álbum" class="aspect-[4/3] w-full object-cover" />
-                                </CardContent>
-                            </Card>
-                        </DialogTrigger>
+                <!-- Galeria de Fotos -->
+                <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div v-for="photo in photos" :key="photo.id" @click="openModal(photo.path)" class="cursor-pointer">
+                        <Card class="overflow-hidden group">
+                            <CardContent class="p-0">
+                                <img
+                                    :src="getPhotoUrl(photo.path)"
+                                    alt="Foto do álbum"
+                                    class="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                    loading="lazy"
+                                />
+                            </CardContent>
+                        </Card>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Conteúdo do Modal (Dialog) -->
-                    <DialogContent class="max-w-4xl">
-                        <DialogHeader>
-                            <DialogTitle>Visualizar Foto</DialogTitle>
-                             <DialogDescription>
-                                Pressione ESC para fechar.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div class="mt-4">
-                            <img :src="selectedPhotoUrl" alt="Foto do álbum em tamanho maior" class="w-full h-auto rounded-md" />
-                        </div>
-                    </DialogContent>
-                </Dialog>
+        <!-- Modal para expandir a foto -->
+        <div v-if="isModalOpen" @click.self="closeModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 transition-opacity duration-300">
+            <div class="relative max-w-4xl max-h-full">
+                <img :src="selectedPhotoUrl" alt="Foto expandida" class="rounded-lg shadow-2xl max-h-[90vh]" />
+                <button @click="closeModal" class="absolute -top-4 -right-4 bg-white rounded-full p-1 text-gray-800 hover:bg-gray-200 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
         </div>
     </AuthenticatedLayout>

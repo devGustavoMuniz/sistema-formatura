@@ -21,16 +21,15 @@ class InstituteService implements iInstituteService
         $this->dao = $dao;
     }
 
-     public function getAllInstitutes(array $filters): LengthAwarePaginator
+    public function getPaginatedInstitutes(array $filters): LengthAwarePaginator
     {
-        return $this->dao->getAll($filters);
+        return $this->dao->getPaginated($filters);
     }
 
-        public function getAllInstitutesNoPagination(array $filters): Collection
+    public function getAllInstitutesCollection(array $filters): Collection
     {
-        return $this->dao->getAllNoPagination($filters);
+        return $this->dao->getCollection($filters);
     }
-
 
     public function findInstituteById(int $id): ?Institute
     {
@@ -39,7 +38,6 @@ class InstituteService implements iInstituteService
 
     public function createInstitute(array $data): Institute
     {
-
         $validationContext = new ValidationContext(new InstituteValidationStrategy());
         $validationContext->validate($data);
 
