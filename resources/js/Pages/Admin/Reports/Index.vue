@@ -1,28 +1,50 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-// Estado para controlar a exibição do relatório
-const reportGenerated = ref(false);
-const selectedReport = ref(null);
+const props = defineProps({
+    reportData: {
+        type: Array,
+        default: () => [],
+    },
+    filters: {
+        type: Object,
+        default: () => ({}),
+    }
+});
 
-// Dados mocados para o relatório
-const reportData = ref([
-    { institution: 'Universidade Federal de Lavras', student_count: 350 },
-    { institution: 'Centro Universitário de Lavras', student_count: 280 },
-    { institution: 'Instituto Presbiteriano Gammon', student_count: 150 },
-]);
+// O estado do formulário de filtros, sincronizado com a prop do Inertia
+const selectedReport = ref(props.filters.report_type || null);
 
-// Função para simular a geração do relatório
+// Verifica se o relatório deve ser exibido
+const reportGenerated = computed(() => props.reportData && props.reportData.length > 0);
+
+// Propriedade computada para definir o título do relatório dinamicamente
+const reportTitle = computed(() => {
+    if (props.filters.report_type === 'students_by_institution') {
+        return 'Resultado: Alunos por Instituição';
+    }
+    if (props.filters.report_type === 'photos_by_student') {
+        return 'Resultado: Fotos por Aluno';
+    }
+    return '';
+});
+
+
+// Função que submete os filtros para o backend
 function generateReport() {
     if (selectedReport.value) {
-        console.log(`Gerando relatório: ${selectedReport.value}`);
-        reportGenerated.value = true;
+        router.get(route('admin.reports.index'), {
+            report_type: selectedReport.value
+        }, {
+            preserveState: true,
+            replace: true,
+        });
     } else {
         alert('Por favor, selecione um tipo de relatório.');
     }
@@ -49,24 +71,26 @@ function generateReport() {
                     <CardContent>
                         <!-- Controles do Relatório -->
                         <div class="flex items-center space-x-4 mb-6">
-                             <Select v-model="selectedReport">
+                            <Select v-model="selectedReport">
                                 <SelectTrigger class="w-[320px]">
                                     <SelectValue placeholder="Selecione o tipo de relatório" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectItem value="students_by_institution">Alunos por Instituição</SelectItem>
-                                        <SelectItem value="photos_by_student" disabled>Fotos por Aluno (em breve)</SelectItem>
+                                        <SelectItem value="photos_by_student">Fotos por Aluno</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
                             <Button @click="generateReport">Gerar Relatório</Button>
                         </div>
 
-                        <!-- Tabela de Resultados -->
+                        <!-- Tabela de Resultados Dinâmica -->
                         <div v-if="reportGenerated">
-                             <h3 class="text-lg font-medium mb-4 mt-8">Resultado: Alunos por Instituição</h3>
-                             <Table>
+                            <h3 class="text-lg font-medium mb-4 mt-8">{{ reportTitle }}</h3>
+
+                            <!-- Tabela: Alunos por Instituição -->
+                            <Table v-if="filters.report_type === 'students_by_institution'">
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Instituição</TableHead>
@@ -74,9 +98,25 @@ function generateReport() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    <TableRow v-for="item in reportData" :key="item.institution">
-                                        <TableCell class="font-medium">{{ item.institution }}</TableCell>
-                                        <TableCell class="text-right">{{ item.student_count }}</TableCell>
+                                    <TableRow v-for="item in reportData" :key="`institute-${item.id}`">
+                                        <TableCell class="font-medium">{{ item.name }}</TableCell>
+                                        <TableCell class="text-right">{{ item.students_count }}</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+
+                            <!-- Tabela: Fotos por Aluno -->
+                            <Table v-if="filters.report_type === 'photos_by_student'">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Aluno</TableHead>
+                                        <TableHead class="text-right">Total de Fotos</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow v-for="item in reportData" :key="`student-${item.id}`">
+                                        <TableCell class="font-medium">{{ item.name }}</TableCell>
+                                        <TableCell class="text-right">{{ item.photos_count }}</TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
