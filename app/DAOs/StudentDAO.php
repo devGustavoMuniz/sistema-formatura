@@ -46,4 +46,10 @@ class StudentDAO implements iStudentDAO
         $student = Student::find($id);
         return $student ? $student->delete() : false;
     }
+
+    public function getAllWithPhotoCount(): Collection
+    {
+        // Utiliza o withCount para obter a contagem de fotos de forma eficiente
+        return Student::withCount('photos')->get();
+    }
 }

@@ -26,7 +26,7 @@ class StudentController extends Controller
         $filters = $request->only('search', 'institute_id');
         $students = $this->studentService->getPaginatedStudents($filters);
 
-        $institutes = $this->instituteService->getAllInstitutes([]);
+        $institutes = $this->instituteService->getAllInstitutesCollection([]);
 
         return Inertia::render('Admin/Students/Index', [
             'students' => $students,
@@ -40,7 +40,8 @@ class StudentController extends Controller
      */
     public function create()
     {
-        $institutes = $this->instituteService->getAllInstitutesNoPagination([]);
+        // Chama o método que retorna a coleção completa para o dropdown
+        $institutes = $this->instituteService->getAllInstitutesCollection([]);
         return Inertia::render('Admin/Students/Create', [
             'institutes' => $institutes
         ]);
@@ -63,7 +64,7 @@ class StudentController extends Controller
     public function edit(int $id)
     {
         $student = $this->studentService->findStudentById($id);
-        $institutes = $this->instituteService->getAllInstitutesNoPagination([]);
+        $institutes = $this->instituteService->getAllInstitutesCollection([]);
         return Inertia::render('Admin/Students/Edit', [
             'student' => $student,
             'institutes' => $institutes,
@@ -75,7 +76,7 @@ class StudentController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        // Delega toda a lógica de validação e atualização para o Service
+
         $this->studentService->updateStudent($id, $request->all());
         return redirect()->route('admin.students.index')->with('success', 'Aluno atualizado com sucesso!');
     }
@@ -85,7 +86,7 @@ class StudentController extends Controller
      */
     public function destroy(int $id)
     {
-        // Delega a lógica de exclusão para o Service
+
         $this->studentService->deleteStudent($id);
         return redirect()->route('admin.students.index')->with('success', 'Aluno excluído com sucesso!');
     }

@@ -14,4 +14,8 @@ interface iStudentDAO
     public function create(array $data): Student;
     public function update(int $id, array $data): bool;
     public function delete(int $id): bool;
+    /**
+     * Retorna todos os alunos com a contagem de fotos.
+     */
+    public function getAllWithPhotoCount(): Collection;
 }
