@@ -49,7 +49,6 @@ class StudentDAO implements iStudentDAO
 
     public function getAllWithPhotoCount(): Collection
     {
-        // Utiliza o withCount para obter a contagem de fotos de forma eficiente
         return Student::withCount('photos')->get();
     }
 }

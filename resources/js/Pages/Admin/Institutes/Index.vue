@@ -7,11 +7,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-vue-next';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-// 1. Importe o novo componente de paginação
+
 import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
-    // 2. A prop 'institutes' agora é um objeto paginado, não um simples array
+
     institutes: {
         type: Object,
         required: true,
@@ -103,7 +103,7 @@ const deleteInstitute = (id) => {
                                 </TableRow>
                             </TableBody>
                         </Table>
-                        
+
                         <Pagination class="mt-6" :links="institutes.links" />
 
                     </CardContent>

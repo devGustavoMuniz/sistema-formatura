@@ -15,7 +15,7 @@ const form = useForm({
 })
 .transform((data) => ({
     ...data,
-    cnpj: data.cnpj.replace(/\D/g, ''), 
+    cnpj: data.cnpj.replace(/\D/g, ''),
 }));
 
 
@@ -37,7 +37,7 @@ watch(() => form.cnpj, (newValue) => {
 const submit = () => {
     form.post(route('admin.institutes.store'), {
         onSuccess: () => {
-            // ...
+
         }
     });
 };

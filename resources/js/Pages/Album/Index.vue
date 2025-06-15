@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Card, CardContent } from '@/components/ui/card';
 
-// As fotos são passadas como uma prop pelo AlbumController
+
 const props = defineProps({
     photos: {
         type: Array,
@@ -16,18 +16,17 @@ const props = defineProps({
 const isModalOpen = ref(false);
 const selectedPhotoUrl = ref('');
 
-// Função para construir o URL completo da imagem a partir do caminho do storage
 const getPhotoUrl = (path) => {
     return `/storage/${path}`;
 };
 
-// Função para abrir o modal com a foto selecionada
+
 const openModal = (photoPath) => {
     selectedPhotoUrl.value = getPhotoUrl(photoPath);
     isModalOpen.value = true;
 };
 
-// Função para fechar o modal
+
 const closeModal = () => {
     isModalOpen.value = false;
     selectedPhotoUrl.value = '';

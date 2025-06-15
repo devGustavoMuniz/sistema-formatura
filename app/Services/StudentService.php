@@ -9,9 +9,7 @@ use App\Interfaces\Services\iStudentService;
 use App\Models\Student;
 use App\Models\User;
 use App\Observers\LogObserver;
-use App\Strategies\CreateStudentValidationStrategy;
 use App\Strategies\StudentValidationStrategy;
-use App\Strategies\UpdateStudentValidationStrategy;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +43,7 @@ class StudentService implements iStudentService
     {
 
 
-        // 2. Após a validação, as operações de banco de dados são executadas
+
         return DB::transaction(function () use ($data) {
 
             $user = User::create([
@@ -88,10 +86,9 @@ class StudentService implements iStudentService
                 return false;
             }
 
-            // Atualiza os dados do estudante
+
             $studentUpdated = $this->dao->update($id, $data);
 
-            // Atualiza os dados do usuário associado, se fornecidos
             $userUpdated = true;
             $userData = array_filter([
                 'name' => $data['name'] ?? null,
@@ -110,7 +107,7 @@ class StudentService implements iStudentService
         $student = $this->dao->findById($id);
 
         if ($student) {
-            // Garante que o usuário associado também seja excluído
+
             return DB::transaction(function () use ($student) {
                 $user = $student->user;
                 $student->delete();

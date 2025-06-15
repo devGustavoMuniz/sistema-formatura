@@ -40,7 +40,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        // Chama o método que retorna a coleção completa para o dropdown
+
         $institutes = $this->instituteService->getAllInstitutesCollection([]);
         return Inertia::render('Admin/Students/Create', [
             'institutes' => $institutes

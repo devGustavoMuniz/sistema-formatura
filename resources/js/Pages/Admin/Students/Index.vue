@@ -27,11 +27,11 @@ const filters = ref({
     institute_id: props.filters.institute_id || 'all',
 });
 
-// 1. Crie refs para controlar o modal de exclusão do aluno
+
 const confirmingDelete = ref(false);
 const studentToDelete = ref(null);
 
-// 2. Crie funções para cada ação do menu
+
 const viewStudent = (id) => {
     router.get(route('admin.students.show', id));
 };

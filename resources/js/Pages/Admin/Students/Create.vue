@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputError from '@/Components/InputError.vue';
 
-// A prop 'institutes' recebe a lista de instituições do controller
+
 defineProps({
     institutes: {
         type: Array,
@@ -16,7 +16,7 @@ defineProps({
     }
 });
 
-// O `useForm` gere o estado do formulário e os erros de validação
+
 const form = useForm({
     name: '',
     ra: '',
@@ -26,10 +26,9 @@ const form = useForm({
     password_confirmation: '',
 });
 
-// A função submit envia todos os dados do objeto `form` para a rota 'store'
+
 const submit = () => {
-    // **PASSO DE DEPURAÇÃO: Mostra os dados no console do navegador antes de enviar**
-    console.log('Dados a serem enviados:', form.data());
+
 
     form.post(route('admin.students.store'));
 };

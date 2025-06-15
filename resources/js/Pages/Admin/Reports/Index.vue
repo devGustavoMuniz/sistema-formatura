@@ -18,13 +18,13 @@ const props = defineProps({
     }
 });
 
-// O estado do formulário de filtros, sincronizado com a prop do Inertia
+
 const selectedReport = ref(props.filters.report_type || null);
 
-// Verifica se o relatório deve ser exibido
+
 const reportGenerated = computed(() => props.reportData && props.reportData.length > 0);
 
-// Propriedade computada para definir o título do relatório dinamicamente
+
 const reportTitle = computed(() => {
     if (props.filters.report_type === 'students_by_institution') {
         return 'Resultado: Alunos por Instituição';
@@ -36,7 +36,6 @@ const reportTitle = computed(() => {
 });
 
 
-// Função que submete os filtros para o backend
 function generateReport() {
     if (selectedReport.value) {
         router.get(route('admin.reports.index'), {
