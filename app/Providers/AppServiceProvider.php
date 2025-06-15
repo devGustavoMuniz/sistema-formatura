@@ -2,6 +2,26 @@
 
 namespace App\Providers;
 
+// Interfaces de Serviço
+use App\Interfaces\Services\iInstituteService;
+use App\Interfaces\Services\iStudentService;
+use App\Interfaces\Services\iPhotoService;
+
+// Implementações (Serviços)
+use App\Services\InstituteService;
+use App\Services\StudentService;
+use App\Services\PhotoService;
+
+// Interfaces de DAO
+use App\Interfaces\DAOs\iInstituteDAO;
+use App\Interfaces\DAOs\iStudentDAO;
+use App\Interfaces\DAOs\iPhotoDAO;
+
+// Implementações (DAOs)
+use App\DAOs\InstituteDAO;
+use App\DAOs\StudentDAO;
+use App\DAOs\PhotoDAO;
+
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +32,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Bind de Serviços
+        $this->app->bind(iInstituteService::class, InstituteService::class);
+        $this->app->bind(iStudentService::class, StudentService::class);
+        $this->app->bind(iPhotoService::class, PhotoService::class);
+
+        // Bind de DAOs
+        $this->app->bind(iInstituteDAO::class, InstituteDAO::class);
+        $this->app->bind(iStudentDAO::class, StudentDAO::class);
+        $this->app->bind(iPhotoDAO::class, PhotoDAO::class);
     }
 
     /**

@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+// 1. Adicione as importações necessárias
+use App\Interfaces\iSubject;
+use App\Traits\Subjectable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Institute extends Model
+// 2. Implemente a interface iSubject
+class Institute extends Model implements iSubject
 {
-    use HasFactory;
+    // 3. Utilize os traits HasFactory e o Subjectable
+    use HasFactory, Subjectable;
 
     /**
      * The attributes that are mass assignable.

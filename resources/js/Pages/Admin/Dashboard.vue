@@ -3,6 +3,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, School } from 'lucide-vue-next';
+
+// 1. Defina a prop 'stats' que o controller está enviando.
+defineProps({
+    stats: {
+        type: Object,
+        required: true,
+    }
+});
 </script>
 
 <template>
@@ -28,11 +36,11 @@ import { Users, School } from 'lucide-vue-next';
                         </CardHeader>
                         <CardContent>
                             <div class="text-2xl font-bold">
-                                1,257
+                                {{ stats.students }}
                             </div>
                             <p class="text-xs text-muted-foreground">
-                                    Clique para gerenciar
-                                </p>
+                                Clique para gerenciar
+                            </p>
                         </CardContent>
                     </Card>
                     </Link>
@@ -46,7 +54,7 @@ import { Users, School } from 'lucide-vue-next';
                             </CardHeader>
                             <CardContent>
                                 <div class="text-2xl font-bold">
-                                    42
+                                    {{ stats.institutes }}
                                 </div>
                                 <p class="text-xs text-muted-foreground">
                                     Clique para gerenciar
@@ -56,11 +64,10 @@ import { Users, School } from 'lucide-vue-next';
                     </Link>
                 </div>
 
-                 <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium">Atividade Recente</h3>
                         <p class="mt-4">Aqui você pode adicionar um gráfico ou uma lista de atividades recentes.</p>
-                        <!-- Placeholder para um gráfico -->
                         <div class="mt-4 h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                             <span class="text-gray-500">Gráfico de Atividade</span>
                         </div>

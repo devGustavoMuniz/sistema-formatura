@@ -7,16 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import InputError from '@/Components/InputError.vue';
 
-// No cenário real, os dados viriam como props da página.
 const props = defineProps({
     institute: {
         type: Object,
-        default: () => ({
-            id: 1,
-            name: 'Universidade Federal de Lavras',
-            cnpj: '26.196.838/0001-20',
-            address: 'Campus Universitário, Lavras - MG'
-        })
+        required: true
     }
 });
 
@@ -27,9 +21,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    // A lógica de submit virá aqui
-    // form.put(route('admin.institutes.update', props.institute.id));
-    console.log(form.data());
+    form.put(route('admin.institutes.update', props.institute.id));
 };
 </script>
 

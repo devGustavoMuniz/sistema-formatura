@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -8,12 +8,24 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal } from 'lucide-vue-next';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
-// Dados mocados para visualização
-const institutions = [
-  { id: 1, name: 'Universidade Federal de Lavras', cnpj: '26.196.838/0001-20', address: 'Campus Universitário, Lavras - MG' },
-  { id: 2, name: 'Centro Universitário de Lavras', cnpj: '12.345.678/0001-99', address: 'Rua de Exemplo, 123, Lavras - MG' },
-  { id: 3, name: 'Instituto Presbiteriano Gammon', cnpj: '98.765.432/0001-11', address: 'Praça Dr. Augusto Silva, 772, Lavras - MG' },
-];
+const props = defineProps({
+    institutes: {
+        type: Array,
+        required: true,
+    },
+    filters: {
+        type: Object,
+        default: () => ({}),
+    },
+});
+
+const deleteInstitute = (id) => {
+    router.delete(route('admin.institutes.destroy', id), {
+        preserveScroll: true,
+        onSuccess: () => {
+        },
+    });
+};
 
 </script>
 
@@ -49,7 +61,7 @@ const institutions = [
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="inst in institutions" :key="inst.id">
+                                <TableRow v-for="inst in institutes" :key="inst.id">
                                     <TableCell class="font-medium">{{ inst.name }}</TableCell>
                                     <TableCell>{{ inst.cnpj }}</TableCell>
                                     <TableCell>{{ inst.address }}</TableCell>
@@ -67,11 +79,6 @@ const institutions = [
                                                 </Link>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger as-child>
-                                                        <!-- 
-                                                            CORREÇÃO: Adicionado @select.prevent
-                                                            Isso impede que o clique no item feche o DropdownMenu,
-                                                            permitindo que o AlertDialog permaneça visível.
-                                                        -->
                                                         <DropdownMenuItem @select.prevent>
                                                             Excluir
                                                         </DropdownMenuItem>
@@ -85,7 +92,9 @@ const institutions = [
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
                                                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                            <AlertDialogAction>Confirmar</AlertDialogAction>
+                                                            <AlertDialogAction @click="deleteInstitute(inst.id)">
+                                                                Confirmar
+                                                            </AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>
                                                 </AlertDialog>
