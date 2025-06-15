@@ -3,6 +3,7 @@
 namespace App\Strategies;
 
 use App\Interfaces\iValidationStrategy;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -24,6 +25,7 @@ class StudentValidationStrategy implements iValidationStrategy
             'ra' => 'required|string|unique:students,ra,' . $id,
             'institute_id' => 'required|exists:institutes,id',
             'user_id' => 'required|exists:users,id',
+            'password' => ['required', 'string', 'min:8','confirmed'],
         ]);
 
         if ($validator->fails()) {

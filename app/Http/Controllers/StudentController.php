@@ -3,11 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\Services\iInstituteService;
-use App\Enums\UserType;
-use App\Models\User;
 use App\Interfaces\Services\iStudentService;
-use App\Models\Student;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -22,21 +18,26 @@ class StudentController extends Controller
         $this->instituteService = $instituteService;
     }
 
+    /**
+     * Exibe a lista paginada de alunos.
+     */
     public function index(Request $request)
     {
         $filters = $request->only('search', 'institute_id');
-        $students = $this->studentService->getAllStudents($filters);
-        
-        $institutes = $this->instituteService->getAllInstitutesNoPagination([]);
+        $students = $this->studentService->getPaginatedStudents($filters);
+
+        $institutes = $this->instituteService->getAllInstitutes([]);
 
         return Inertia::render('Admin/Students/Index', [
             'students' => $students,
+            'institutes' => $institutes,
             'filters' => $filters,
-            'allInstitutes' => $institutes, 
         ]);
     }
 
-
+    /**
+     * Exibe o formulário de criação de aluno.
+     */
     public function create()
     {
         $institutes = $this->instituteService->getAllInstitutesNoPagination([]);
@@ -47,29 +48,8 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Valide os dados necessários para o User e para o Student
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'ra' => 'required|string|unique:students,ra',
-            'institute_id' => 'required|exists:institutes,id',
-        ]);
 
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => Hash::make('password'),
-            'type' => UserType::ALUNO,
-        ]);
-
-        $studentData = [
-            'name' => $validatedData['name'],
-            'ra' => $validatedData['ra'],
-            'institute_id' => $validatedData['institute_id'],
-            'user_id' => $user->id, 
-        ];
-
-        $this->studentService->createStudent($studentData);
+        $this->studentService->createStudentAndUser($request->all());
 
         return redirect()->route('admin.students.index')->with('success', 'Aluno criado com sucesso!');
     }
@@ -90,14 +70,22 @@ class StudentController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza os dados de um aluno específico.
+     */
     public function update(Request $request, int $id)
     {
+        // Delega toda a lógica de validação e atualização para o Service
         $this->studentService->updateStudent($id, $request->all());
         return redirect()->route('admin.students.index')->with('success', 'Aluno atualizado com sucesso!');
     }
 
+    /**
+     * Remove um aluno e seu usuário associado.
+     */
     public function destroy(int $id)
     {
+        // Delega a lógica de exclusão para o Service
         $this->studentService->deleteStudent($id);
         return redirect()->route('admin.students.index')->with('success', 'Aluno excluído com sucesso!');
     }

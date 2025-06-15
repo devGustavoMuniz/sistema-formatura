@@ -4,22 +4,26 @@ namespace App\DAOs;
 
 use App\Interfaces\DAOs\iStudentDAO;
 use App\Models\Student;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class StudentDAO implements iStudentDAO
 {
-     public function getAll(array $filters): LengthAwarePaginator
+    private function getQuery(array $filters): Builder
     {
-        return Student::with('institute')->filter($filters)->paginate(15);
+        return Student::with('institute')->filter($filters);
     }
 
-      public function getAllNoPagination(array $filters): Collection
+    public function getPaginated(array $filters, int $perPage = 15): LengthAwarePaginator
     {
-        return Student::with('institute')->filter($filters)->get();
+        return $this->getQuery($filters)->paginate($perPage);
     }
 
+    public function getCollection(array $filters): Collection
+    {
+        return $this->getQuery($filters)->get();
+    }
 
     public function findById(int $id): ?Student
     {
