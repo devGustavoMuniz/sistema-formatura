@@ -31,12 +31,13 @@ const user = usePage().props.auth.user;
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
-                                </NavLink>
+
 
                                 <!-- Admin-only Links -->
                                 <template v-if="user && user.type === 'admin'">
+                                    <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                        Dashboard
+                                    </NavLink>
                                     <NavLink :href="route('admin.institutes.index')" :active="route().current('admin.institutes.*')">
                                         Instituições
                                     </NavLink>
