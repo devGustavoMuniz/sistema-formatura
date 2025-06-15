@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'type' => UserType::ALUNO,
         ]);
 
-         $institutes = Institute::factory(5)->create();
+         $institutes = Institute::factory(25)->create();
 
         Student::factory(50)->create([
             'institute_id' => function () use ($institutes) {

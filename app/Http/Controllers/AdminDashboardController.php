@@ -22,8 +22,8 @@ class AdminDashboardController extends Controller
      */
     public function index()
     {
-        $totalInstitutes = $this->instituteService->getAllInstitutes([])->count();
-        $totalStudents = $this->studentService->getAllStudents([])->count();
+        $totalInstitutes = $this->instituteService->getAllInstitutesNoPagination([])->count();
+        $totalStudents = $this->studentService->getAllStudentsNoPagination([])->count();
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => [

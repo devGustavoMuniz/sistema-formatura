@@ -23,12 +23,16 @@ class StudentController extends Controller
     {
         $filters = $request->only('search', 'institute_id');
         $students = $this->studentService->getAllStudents($filters);
+        
+        $institutes = $this->instituteService->getAllInstitutesNoPagination([]);
 
         return Inertia::render('Admin/Students/Index', [
             'students' => $students,
             'filters' => $filters,
+            'allInstitutes' => $institutes, 
         ]);
     }
+
 
     public function create()
     {
@@ -53,7 +57,7 @@ class StudentController extends Controller
     public function edit(int $id)
     {
         $student = $this->studentService->findStudentById($id);
-        $institutes = $this->instituteService->getAllInstitutes([]);
+        $institutes = $this->instituteService->getAllInstitutesNoPagination([]);
         return Inertia::render('Admin/Students/Edit', [
             'student' => $student,
             'institutes' => $institutes,

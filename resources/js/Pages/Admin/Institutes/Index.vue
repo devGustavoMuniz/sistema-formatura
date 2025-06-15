@@ -7,10 +7,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-vue-next';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+// 1. Importe o novo componente de paginação
+import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
+    // 2. A prop 'institutes' agora é um objeto paginado, não um simples array
     institutes: {
-        type: Array,
+        type: Object,
         required: true,
     },
     filters: {
@@ -22,8 +25,6 @@ const props = defineProps({
 const deleteInstitute = (id) => {
     router.delete(route('admin.institutes.destroy', id), {
         preserveScroll: true,
-        onSuccess: () => {
-        },
     });
 };
 
@@ -61,7 +62,7 @@ const deleteInstitute = (id) => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="inst in institutes" :key="inst.id">
+                                <TableRow v-for="inst in institutes.data" :key="inst.id">
                                     <TableCell class="font-medium">{{ inst.name }}</TableCell>
                                     <TableCell>{{ inst.cnpj }}</TableCell>
                                     <TableCell>{{ inst.address }}</TableCell>
@@ -92,9 +93,7 @@ const deleteInstitute = (id) => {
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
                                                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                            <AlertDialogAction @click="deleteInstitute(inst.id)">
-                                                                Confirmar
-                                                            </AlertDialogAction>
+                                                            <AlertDialogAction @click="deleteInstitute(inst.id)">Confirmar</AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>
                                                 </AlertDialog>
@@ -104,6 +103,9 @@ const deleteInstitute = (id) => {
                                 </TableRow>
                             </TableBody>
                         </Table>
+                        
+                        <Pagination class="mt-6" :links="institutes.links" />
+
                     </CardContent>
                 </Card>
             </div>

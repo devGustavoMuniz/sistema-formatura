@@ -5,13 +5,21 @@ namespace App\DAOs;
 use App\Interfaces\DAOs\iInstituteDAO;
 use App\Models\Institute;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 
 class InstituteDAO implements iInstituteDAO
 {
-    public function getAll(array $filters): Collection
+   public function getAll(array $filters): LengthAwarePaginator
+    {
+        return Institute::filter($filters)->paginate(15);
+    }
+
+      public function getAllNoPagination(array $filters): Collection
     {
         return Institute::filter($filters)->get();
     }
+
 
     public function findById(int $id): ?Institute
     {

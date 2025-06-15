@@ -7,6 +7,8 @@ use App\Traits\Subjectable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
+
 
 class Photo extends Model implements iSubject
 {
@@ -22,6 +24,8 @@ class Photo extends Model implements iSubject
         'path',
         'filesize',
     ];
+
+    protected $appends = ['url'];
 
     /**
      * Get the attributes that should be cast.
@@ -42,4 +46,10 @@ class Photo extends Model implements iSubject
     {
         return $this->belongsTo(Student::class);
     }
+
+    public function getUrlAttribute(): string
+    {
+        return Storage::disk('public')->url($this->path);
+    }
+
 }
