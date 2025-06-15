@@ -21,7 +21,7 @@ class InstituteValidationStrategy implements iValidationStrategy
 
         $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
-            'cnpj' => 'required|string|unique:institutes,cnpj,' . $id,
+            'cnpj' => 'required|string|unique:institutes,cnpj,' . $id . '|size:14',
             'address' => 'nullable|string',
         ]);
 

@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,10 +15,29 @@ const props = defineProps({
     }
 });
 
+const formatCnpj = (value) => {
+    if (!value) return "";
+    const digitsOnly = value.replace(/\D/g, '');
+    const truncated = digitsOnly.slice(0, 14);
+    return truncated
+        .replace(/(\d{2})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1/$2')
+        .replace(/(\d{4})(\d)/, '$1-$2');
+};
+
 const form = useForm({
     name: props.institute.name,
-    cnpj: props.institute.cnpj,
+    cnpj: formatCnpj(props.institute.cnpj),
     address: props.institute.address,
+})
+.transform((data) => ({
+    ...data,
+    cnpj: data.cnpj.replace(/\D/g, ''),
+}));
+
+watch(() => form.cnpj, (newValue) => {
+    form.cnpj = formatCnpj(newValue);
 });
 
 const submit = () => {
@@ -52,7 +72,7 @@ const submit = () => {
                                 </div>
                                 <div class="grid gap-2">
                                     <Label for="cnpj">CNPJ</Label>
-                                    <Input id="cnpj" type="text" v-model="form.cnpj" required />
+                                    <Input id="cnpj" type="text" v-model="form.cnpj" required maxlength="18" />
                                     <InputError :message="form.errors.cnpj" />
                                 </div>
                                 <div class="grid gap-2">
