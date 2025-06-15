@@ -8,6 +8,15 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputError from '@/Components/InputError.vue';
 
+// 1. Defina a prop 'institutes' para receber a lista do controller
+const props = defineProps({
+    institutes: {
+        type: Array,
+        required: true,
+    }
+});
+
+// 2. O formulário já contém os campos corretos
 const form = useForm({
     name: '',
     ra: '',
@@ -15,8 +24,13 @@ const form = useForm({
     institute_id: null,
 });
 
+// 3. A função submit agora envia os dados para a rota 'store'
 const submit = () => {
-    console.log(form.data());
+    form.post(route('admin.students.store'), {
+        onSuccess: () => {
+            // O formulário é limpo automaticamente em caso de sucesso
+        }
+    });
 };
 </script>
 
@@ -63,9 +77,9 @@ const submit = () => {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem value="1">Universidade Federal de Lavras</SelectItem>
-                                                <SelectItem value="2">Centro Universitário de Lavras</SelectItem>
-                                                <SelectItem value="3">Instituto Presbiteriano Gammon</SelectItem>
+                                                <SelectItem v-for="institute in institutes" :key="institute.id" :value="institute.id.toString()">
+                                                    {{ institute.name }}
+                                                </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

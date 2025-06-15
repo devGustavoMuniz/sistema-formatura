@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\Services\iInstituteService;
+use App\Enums\UserType;
+use App\Models\User;
 use App\Interfaces\Services\iStudentService;
 use App\Models\Student;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -36,7 +39,7 @@ class StudentController extends Controller
 
     public function create()
     {
-        $institutes = $this->instituteService->getAllInstitutes([]);
+        $institutes = $this->instituteService->getAllInstitutesNoPagination([]);
         return Inertia::render('Admin/Students/Create', [
             'institutes' => $institutes
         ]);
@@ -44,7 +47,30 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
-        $this->studentService->createStudent($request->all());
+        // 1. Valide os dados necessários para o User e para o Student
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'ra' => 'required|string|unique:students,ra',
+            'institute_id' => 'required|exists:institutes,id',
+        ]);
+
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make('password'),
+            'type' => UserType::ALUNO,
+        ]);
+
+        $studentData = [
+            'name' => $validatedData['name'],
+            'ra' => $validatedData['ra'],
+            'institute_id' => $validatedData['institute_id'],
+            'user_id' => $user->id, 
+        ];
+
+        $this->studentService->createStudent($studentData);
+
         return redirect()->route('admin.students.index')->with('success', 'Aluno criado com sucesso!');
     }
 
