@@ -1,14 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue'; // Importar ref e watch
-import { debounce } from 'lodash'; // Importar debounce para otimização
+import { ref, watch } from 'vue';
+import { debounce } from 'lodash';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Input } from '@/components/ui/input'; // Importar o componente de Input
+import { Input } from '@/components/ui/input';
 import { MoreHorizontal, Search } from 'lucide-vue-next';
 import Pagination from '@/Components/Pagination.vue';
 
@@ -19,11 +19,11 @@ const props = defineProps({
     },
     filters: {
         type: Object,
-        default: () => ({}),
+        default: () => ({ search: '' }),
     },
 });
 
-// Lógica para o campo de busca
+// --- Lógica de Busca ---
 const search = ref(props.filters.search);
 watch(search, debounce((value) => {
     router.get(route('admin.institutes.index'), { search: value }, {
@@ -32,13 +32,26 @@ watch(search, debounce((value) => {
     });
 }, 300));
 
+// --- Lógica de Exclusão Corrigida ---
+const confirmingDelete = ref(false);
+const instituteToDelete = ref(null);
 
-const deleteInstitute = (id) => {
-    router.delete(route('admin.institutes.destroy', id), {
-        preserveScroll: true,
-    });
+const confirmInstituteDelete = (institute) => {
+    instituteToDelete.value = institute;
+    confirmingDelete.value = true;
 };
 
+const deleteInstitute = () => {
+    if (instituteToDelete.value) {
+        router.delete(route('admin.institutes.destroy', instituteToDelete.value.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                confirmingDelete.value = false;
+                instituteToDelete.value = null;
+            },
+        });
+    }
+};
 </script>
 
 <template>
@@ -63,7 +76,6 @@ const deleteInstitute = (id) => {
                         <CardTitle>Lista de Instituições</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <!-- CAMPO DE BUSCA ADICIONADO AQUI -->
                         <div class="flex items-center space-x-4 mb-6">
                             <div class="relative w-full max-w-sm">
                                 <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -102,25 +114,10 @@ const deleteInstitute = (id) => {
                                                 <Link :href="route('admin.institutes.edit', inst.id)">
                                                     <DropdownMenuItem>Editar</DropdownMenuItem>
                                                 </Link>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger as-child>
-                                                        <DropdownMenuItem @select.prevent>
-                                                            Excluir
-                                                        </DropdownMenuItem>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                Essa ação não pode ser desfeita. Isso irá deletar permanentemente a instituição.
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                            <AlertDialogAction @click="deleteInstitute(inst.id)">Confirmar</AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
+                                                <!-- O @select agora chama a função que controla o estado -->
+                                                <DropdownMenuItem @select="confirmInstituteDelete(inst)">
+                                                    Excluir
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
@@ -129,10 +126,27 @@ const deleteInstitute = (id) => {
                         </Table>
 
                         <Pagination class="mt-6" :links="institutes.links" />
-
                     </CardContent>
                 </Card>
             </div>
         </div>
+
+        <!-- DIÁLOGO DE CONFIRMAÇÃO ÚNICO, FORA DO LOOP -->
+        <AlertDialog :open="confirmingDelete" @update:open="confirmingDelete = false">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Essa ação não pode ser desfeita. Isso irá deletar permanentemente a instituição
+                        <span v-if="instituteToDelete" class="font-bold">"{{ instituteToDelete.name }}"</span>.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel @click="confirmingDelete = false">Cancelar</AlertDialogCancel>
+                    <AlertDialogAction @click="deleteInstitute">Confirmar</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
     </AuthenticatedLayout>
 </template>
