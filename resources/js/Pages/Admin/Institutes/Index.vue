@@ -1,17 +1,18 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue'; // Importar ref e watch
+import { debounce } from 'lodash'; // Importar debounce para otimização
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-vue-next';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input'; // Importar o componente de Input
+import { MoreHorizontal, Search } from 'lucide-vue-next';
 import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
-
     institutes: {
         type: Object,
         required: true,
@@ -21,6 +22,16 @@ const props = defineProps({
         default: () => ({}),
     },
 });
+
+// Lógica para o campo de busca
+const search = ref(props.filters.search);
+watch(search, debounce((value) => {
+    router.get(route('admin.institutes.index'), { search: value }, {
+        preserveState: true,
+        replace: true,
+    });
+}, 300));
+
 
 const deleteInstitute = (id) => {
     router.delete(route('admin.institutes.destroy', id), {
@@ -35,7 +46,7 @@ const deleteInstitute = (id) => {
 
     <AuthenticatedLayout>
         <template #header>
-             <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     Gerenciamento de Instituições
                 </h2>
@@ -52,6 +63,19 @@ const deleteInstitute = (id) => {
                         <CardTitle>Lista de Instituições</CardTitle>
                     </CardHeader>
                     <CardContent>
+                        <!-- CAMPO DE BUSCA ADICIONADO AQUI -->
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="relative w-full max-w-sm">
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    type="search"
+                                    placeholder="Buscar por nome ou CNPJ..."
+                                    class="pl-9"
+                                    v-model="search"
+                                />
+                            </div>
+                        </div>
+
                         <Table>
                             <TableHeader>
                                 <TableRow>
